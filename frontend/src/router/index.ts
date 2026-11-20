@@ -10,6 +10,7 @@ const Experiment = () => import('@/views/experiment/index.vue')
 const TrendSeries = () => import('@/views/trend_series/index.vue')
 const Attribution = () => import('@/views/attribution/index.vue')
 const Segmentation = () => import('@/views/segmentation/index.vue')
+const CoverageBoard = () => import('@/views/coverage_board/index.vue')
 const ReportGen = () => import('@/views/report_gen/index.vue')
 const Forecast = () => import('@/views/forecast/index.vue')
 const DataMart = () => import('@/views/data_mart/index.vue')
@@ -33,6 +34,7 @@ const router = createRouter({
     { path: '/trend_series', name: 'trend_series', component: TrendSeries },
     { path: '/attribution', name: 'attribution', component: Attribution },
     { path: '/segmentation', name: 'segmentation', component: Segmentation },
+    { path: '/coverage_board', name: 'coverage_board', component: CoverageBoard },
     { path: '/report_gen', name: 'report_gen', component: ReportGen },
     { path: '/forecast', name: 'forecast', component: Forecast },
     { path: '/data_mart', name: 'data_mart', component: DataMart },

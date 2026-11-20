@@ -6,11 +6,19 @@ from typing import Any
 from app.store import store
 
 MODULE = "segmentation"
+STATUS_AVAILABLE = "可用"
 LIST_FIELDS = ["切片编号", "源数据集", "切分维度", "切片粒度", "保留天数", "存储格式", "行数统计", "最后切分"]
 REQUIRED_FIELDS = ["切片编号", "源数据集", "切分维度"]
 STATUS_ORDER = ["待切分", "切分中", "可用", "已过期"]
 ACTION_RULES = {"启动切分": "切分中", "标记可用": "可用", "标记过期": "已过期"}
 NEGATIVE_ACTIONS = []
+
+
+def _notify_coverage_board(entry: dict[str, Any], *, reason: str) -> None:
+    """登记变更后通知覆盖看板抬高水位（延迟导入避免模块循环依赖）。"""
+    from app.services.coverage_board import coverage_board_service
+
+    coverage_board_service.notify_registry_changed(entry, reason=reason)
 
 
 class SegmentationService:
@@ -48,6 +56,7 @@ class SegmentationService:
         entry["pending"] = True
         entry["abnormal"] = False
         rows.append(entry)
+        _notify_coverage_board(entry, reason="登记新切片")
         return entry, []
 
     def run_action(self, entry_id: int, action: str) -> tuple[dict[str, Any] | None, str]:
@@ -62,4 +71,5 @@ class SegmentationService:
         entry["status"] = target
         entry["pending"] = target != STATUS_ORDER[-1]
         entry["abnormal"] = action in NEGATIVE_ACTIONS
+        _notify_coverage_board(entry, reason=f"切片动作「{action}」")
         return entry, f"数据切片已{action}"

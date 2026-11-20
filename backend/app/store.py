@@ -54,3 +54,7 @@ def reset_store() -> None:
     """重新初始化全局 store，用于测试隔离。"""
     global store
     store = Store()
+    # 覆盖看板的清单历史与物化缓存同样要随 store 清空，避免跨用例串数据。
+    from app.services.coverage_board import coverage_board_service
+
+    coverage_board_service.reset()
